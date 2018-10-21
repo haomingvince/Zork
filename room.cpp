@@ -47,11 +47,11 @@ void Room::setupRoom(rapidxml::xml_node<>* node) {
                         direction = "e";
                     }
                 }
+                newborder->direction = direction;
+                newborder->name = bdname;
+                this->border.push_back(newborder);
                 temp2 = temp2 -> next_sibling();
             }
-            newborder->direction = direction;
-            newborder->name = bdname;
-            this->border.push_back(newborder);
 
         }
         string buffer;
