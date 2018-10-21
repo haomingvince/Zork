@@ -46,8 +46,7 @@ void Trigger::setupTrigger(rapidxml::xml_node<> *node) {
 
 int Trigger::condition_count(rapidxml::xml_node<>* node){
     int num = 0;
-    for(rapidxml::xml_node<>* kid = node -> first_node();
-        kid; kid = kid -> next_sibling()){
+    for(rapidxml::xml_node<>* kid = node->first_node(); kid; kid = kid -> next_sibling()){
         num++;
     }
     return num;

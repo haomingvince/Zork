@@ -1,0 +1,4 @@
+# Git Ignore File
+cmake-build-debug/
+.idea/
+_DS_Store

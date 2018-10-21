@@ -1,4 +1,4 @@
-#include "Room.hpp"
+#include "room.hpp"
 
 Room::~Room() { }
 
@@ -26,9 +26,9 @@ void Room::setupRoom(rapidxml::xml_node<>* node) {
         if (tag1 == "border") {
             Border *newborder = new Border();
             string bdname, direction;
-            rapidxml::xml_node<>* temp2 = temp2->first_node();
+            rapidxml::xml_node<>* temp2 = temp1->first_node();
             while(temp2 != NULL) {
-                string tag2 = string(temp1->name());
+                string tag2 = string(temp2->name());
                 if (tag2 == "name") {
                     bdname = temp2->value();
                 }

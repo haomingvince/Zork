@@ -21,4 +21,6 @@ add_executable(proj1
         item.cpp
         item.hpp
         trigger.cpp
-        trigger.hpp)
+        trigger.hpp
+        room.cpp
+        room.hpp)
