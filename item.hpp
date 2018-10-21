@@ -1,14 +1,13 @@
 #ifndef _ITEM_H
 #define _ITEM_H
 
+#include <stdio.h>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <map>
-#include <stdio.h>
 #include "rapidxml.hpp"
 #include "trigger.hpp"
 #include "executioner.hpp"
-#include <iostream>
 
 using namespace std;
 

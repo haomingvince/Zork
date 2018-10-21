@@ -1,13 +1,14 @@
 #ifndef _TRIGGER_HPP
 #define _TRIGGER_HPP
 
+#include <stdio.h>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <map>
-#include <stdio.h>
 #include "rapidxml.hpp"
 #include "executioner.hpp"
-#include <iostream>
+
+using namespace std;
 
 class Trigger{
 public:

@@ -1,14 +1,14 @@
 #ifndef _ATTACK_HPP
 #define _ATTACK_HPP
 
+#include <stdio.h>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <map>
-#include <stdio.h>
 #include "rapidxml.hpp"
 #include "executioner.hpp"
-//#include "trigger.hpp"
-#include <iostream>
+
+using namespace std;
 
 class Attack{
 public:

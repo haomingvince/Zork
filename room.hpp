@@ -1,14 +1,15 @@
 #ifndef _ROOM_HPP
 #define _ROOM_HPP
 
+#include <stdio.h>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <map>
-#include <stdio.h>
 #include "rapidxml.hpp"
 #include "trigger.hpp"
 #include "executioner.hpp"
-#include <iostream>
+
+using namespace std;
 
 class Room{
 public:

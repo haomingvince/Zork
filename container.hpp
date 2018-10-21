@@ -1,13 +1,12 @@
 #ifndef _CONTAINER_H
 #define _CONTAINER_H
 
+#include <stdio.h>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <map>
-#include <stdio.h>
 #include "rapidxml.hpp"
 #include "trigger.hpp"
-#include <iostream>
 
 using namespace std;
 

@@ -1,14 +1,13 @@
 #ifndef _CREATURE_H
 #define _CREATURE_H
 
+#include <stdio.h>
+#include <iostream>
 #include <string>
 #include <vector>
-#include <map>
-#include <stdio.h>
 #include "rapidxml.hpp"
 #include "attack.hpp"
 #include "trigger.hpp"
-#include <iostream>
 
 using namespace std;
 
