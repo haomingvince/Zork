@@ -1,4 +1,4 @@
-#include "room.hpp"
+#include "Room.hpp"
 
 Room::~Room() { }
 
@@ -7,8 +7,8 @@ Room::Room(rapidxml::xml_node<>* node) {
 }
 
 void Room::setupRoom(rapidxml::xml_node<>* node) {
+    string buffer;
     rapidxml::xml_node<> *temp1 = node->first_node();
-
     while (temp1 != NULL) {
         string tag1 = string(temp1->name());
         if (tag1 == "name") {
@@ -25,9 +25,10 @@ void Room::setupRoom(rapidxml::xml_node<>* node) {
         }
         if (tag1 == "border") {
             Border *newborder = new Border();
-            string bdname, direction;
-            rapidxml::xml_node<>* temp2 = temp1->first_node();
-            while(temp2 != NULL) {
+            string bdname;
+            string direction;
+            rapidxml::xml_node<> *temp2 = temp1->first_node();
+            while (temp2 != NULL) {
                 string tag2 = string(temp2->name());
                 if (tag2 == "name") {
                     bdname = temp2->value();
@@ -47,14 +48,12 @@ void Room::setupRoom(rapidxml::xml_node<>* node) {
                         direction = "e";
                     }
                 }
-                newborder->direction = direction;
-                newborder->name = bdname;
-                this->border.push_back(newborder);
-                temp2 = temp2 -> next_sibling();
+                temp2 = temp2->next_sibling();
             }
-
+            newborder->direction = direction;
+            newborder->name = bdname;
+            this->border.push_back(newborder);
         }
-        string buffer;
         if (tag1 == "container") {
             buffer = temp1->value();
             this->container.push_back(buffer);

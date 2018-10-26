@@ -15,9 +15,6 @@ public:
     Trigger(rapidxml::xml_node<>* node);
     virtual ~Trigger();
     void setupTrigger(rapidxml::xml_node<>* node);
-    void setupStatus(rapidxml::xml_node<>* node);
-    void setupOwner(rapidxml::xml_node<>* node);
-    int condition_count(rapidxml::xml_node<>* node);
 
     string type = "single";
     string command = "";

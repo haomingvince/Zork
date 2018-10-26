@@ -19,8 +19,8 @@ public:
     Condition condition;
     string print = "";
     vector<string> action;
-    int have_condition = 0;
-    int have_print = 0;
-    int have_action = 0;
+    int has_condition = 0;
+    int has_print = 0;
+    int has_action = 0;
 };
 #endif
