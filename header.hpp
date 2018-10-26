@@ -487,16 +487,6 @@ void open(string inpStr) {
     return;
 }
 
-void exit(){
-    if(current -> type == "exit"){
-        END = true;
-        cout << "Game over" << endl;
-        return;
-    }
-    cout << "There is no exit in this room" << endl;
-}
-
-
 void attack(string attakee, string weapon) {
     if (!existAttackee(attakee)) {
         cout << "Error" << endl;
@@ -739,21 +729,26 @@ string istypeof(string o){
     return NULL;
 }
 
+void has_pa(Trigger* t){
+    int j = 0;
+    if(t->has_print){
+        cout<<t->print<<endl;
+    }
+    if(t->has_action){
+        for(j = 0; j < t->action.size();j++){
+            checkAction(t->action[j]);
+        }
+    }
+}
+
 bool twoCondTrigger(Trigger* t){
-    int i,j;
+    int i = 0;
     string object_type = istypeof(t->status.object);
     if(object_type == "Room"){
         for(i = 0; i < rooms.size(); i++){
             if(rooms[i] -> name == t->status.object){
                 if(rooms[i] -> status == t->status.status){
-                    if(t->has_print){
-                        cout<<t->print<<endl;
-                    }
-                    if(t->has_action){
-                        for(j = 0; j < t->action.size();j++){
-                            checkAction(t->action[j]);
-                        }
-                    }
+                    has_pa(t);
                     return true;
                 }
             }
@@ -763,14 +758,7 @@ bool twoCondTrigger(Trigger* t){
         for(i = 0; i < items.size(); i++){
             if(items[i] -> name == t->status.object){
                 if(items[i] -> status == t->status.status){
-                    if(t->has_print){
-                        cout<<t->print<<endl;
-                    }
-                    if(t->has_action){
-                        for(j = 0; j < t->action.size();j++){
-                            checkAction(t->action[j]);
-                        }
-                    }
+                    has_pa(t);
                     return true;
                 }
             }
@@ -780,14 +768,7 @@ bool twoCondTrigger(Trigger* t){
         for(i = 0; i < containers.size(); i++){
             if(containers[i] -> name == t->status.object){
                 if(containers[i] -> status == t->status.status){
-                    if(t->has_print){
-                        cout<<t->print<<endl;
-                    }
-                    if(t->has_action){
-                        for(j = 0; j < t->action.size();j++){
-                            checkAction(t->action[j]);
-                        }
-                    }
+                    has_pa(t);
                     return true;
                 }
             }
@@ -797,14 +778,7 @@ bool twoCondTrigger(Trigger* t){
         for(i = 0; i < creatures.size(); i++){
             if(creatures[i] -> name == t->status.object){
                 if(creatures[i] -> status == t->status.status){
-                    if(t->has_print){
-                        cout<<t->print<<endl;
-                    }
-                    if(t->has_action){
-                        for(j = 0; j < t->action.size();j++){
-                            checkAction(t->action[j]);
-                        }
-                    }
+                    has_pa(t);
                     return true;
                 }
             }
@@ -814,20 +788,12 @@ bool twoCondTrigger(Trigger* t){
 }
 bool threeCondTrigger(Trigger * t){
     //if owner == object && has == yes || owner != object && has == no -> trigger activated
-    int i,j,k;
-
+    int i = 0;
+    int j = 0;
     if(t->owner.owner == "inventory"){
         for(i = 0; i < inventory.size(); i++){
             if(inventory[i] == t->owner.object && t->owner.has == "yes") {
-                //if(t->owner.has == "yes"){
-                if (t->has_print) {
-                    cout << t->print << endl;
-                }
-                if (t->has_action) {
-                    for (k = 0; k < t->action.size(); k++) {
-                        checkAction(t->action[k]);
-                    }
-                }
+                has_pa(t);
                 return true;
             }
             if (inventory[i] == t->owner.object && t->owner.has == "no"){
@@ -835,15 +801,7 @@ bool threeCondTrigger(Trigger * t){
             }
         }
         if(i == inventory.size() && t->owner.has == "no") {   // owner != object
-            //if(t->owner.has == "no"){
-            if (t->has_print) {
-                cout << t->print << endl;
-            }
-            if (t->has_action) {
-                for (k = 0; k < t->action.size(); k++) {
-                    checkAction(t->action[k]);
-                }
-            }
+            has_pa(t);
             return true;
         }
         if (i == inventory.size() && t->owner.has == "yes"){
@@ -858,15 +816,7 @@ bool threeCondTrigger(Trigger * t){
                 if(object_type == "Item"){
                     for(j = 0; j < rooms[i] -> item.size(); j++) {
                         if (rooms[i]->item[j] == t->owner.object && t->owner.has == "yes") {
-                            //if(t->owner.has == "yes"){
-                            if (t->has_print) {
-                                cout << t->print << endl;
-                            }
-                            if (t->has_action) {
-                                for (k = 0; k < t->action.size(); k++) {
-                                    checkAction(t->action[k]);
-                                }
-                            }
+                            has_pa(t);
                             return true;
                         }
                         if (rooms[i]->item[j] == t->owner.object && t->owner.has == "no") {
@@ -874,33 +824,17 @@ bool threeCondTrigger(Trigger * t){
                         }
                     }
                     if(j == rooms[i]->item.size() && t->owner.has == "no") {
-                        //if(t->owner.has == "no"){
-                        if (t->has_print) {
-                            cout << t->print << endl;
-                        }
-                        if (t->has_action) {
-                            for (k = 0; k < t->action.size(); k++) {
-                                checkAction(t->action[k]);
-                            }
-                        }
+                        has_pa(t);
                         return true;
                     }
-                    if (j == rooms[i]->item.size() && t->owner.has == "yes") {
+                    if(j == rooms[i]->item.size() && t->owner.has == "yes") {
                         return false;
                     }
                 }
                 if(object_type == "Container"){
                     for(j = 0; j < rooms[i] -> container.size(); j++){
                         if(rooms[i]->container[j]== t->owner.object && t->owner.has == "yes") {
-                            //if(t->owner.has == "yes"){
-                            if (t->has_print) {
-                                cout << t->print << endl;
-                            }
-                            if (t->has_action) {
-                                for (k = 0; k < t->action.size(); k++) {
-                                    checkAction(t->action[k]);
-                                }
-                            }
+                            has_pa(t);
                             return true;
                         }
                         if(rooms[i]->container[j]== t->owner.object && t->owner.has == "no"){
@@ -908,15 +842,7 @@ bool threeCondTrigger(Trigger * t){
                         }
                     }
                     if(j == rooms[i]->container.size() && t->owner.has == "no") {
-                        //if(t->owner.has == "no"){
-                        if (t->has_print) {
-                            cout << t->print << endl;
-                        }
-                        if (t->has_action) {
-                            for (k = 0; k < t->action.size(); k++) {
-                                checkAction(t->action[k]);
-                            }
-                        }
+                        has_pa(t);
                         return true;
                     }
                     if(j == rooms[i]->container.size() && t->owner.has == "yes"){
@@ -926,15 +852,7 @@ bool threeCondTrigger(Trigger * t){
                 if(object_type == "Creature"){
                     for(j = 0; j < rooms[i] -> creature.size(); j++){
                         if(rooms[i]->creature[j]== t->owner.object && t->owner.has == "yes") {
-                            //if(t->owner.has == "yes"){
-                            if (t->has_print) {
-                                cout << t->print << endl;
-                            }
-                            if (t->has_action) {
-                                for (k = 0; k < t->action.size(); k++) {
-                                    checkAction(t->action[k]);
-                                }
-                            }
+                            has_pa(t);
                             return true;
                         }
                         if(rooms[i]->creature[j]== t->owner.object && t->owner.has == "no"){
@@ -942,15 +860,7 @@ bool threeCondTrigger(Trigger * t){
                         }
                     }
                     if(j == rooms[i]->creature.size() && t->owner.has == "no") {
-                        //if(t->owner.has == "no"){
-                        if (t->has_print) {
-                            cout << t->print << endl;
-                        }
-                        if (t->has_action) {
-                            for (k = 0; k < t->action.size(); k++) {
-                                checkAction(t->action[k]);
-                            }
-                        }
+                        has_pa(t);
                         return true;
                     }
                     if(j == rooms[i]->creature.size() && t->owner.has == "yes"){
@@ -963,18 +873,9 @@ bool threeCondTrigger(Trigger * t){
     if(owner_type == "Container"){
         for(i = 0; i < containers.size(); i++){
             if(containers[i]->name == t->owner.owner){
-                //Object can only be item
                 for(j = 0; j < containers[i] -> item.size(); j++){
                     if(containers[i]->item[j]== t->owner.object && t->owner.has == "yes") {
-                        //if(t->owner.has == "yes"){
-                        if (t->has_print) {
-                            cout << t->print << endl;
-                        }
-                        if (t->has_action) {
-                            for (k = 0; k < t->action.size(); k++) {
-                                checkAction(t->action[k]);
-                            }
-                        }
+                        has_pa(t);
                         return true;
                     }
                     if(containers[i]->item[j]== t->owner.object && t->owner.has == "no"){
@@ -982,15 +883,7 @@ bool threeCondTrigger(Trigger * t){
                     }
                 }
                 if(j == containers[i]->item.size() && t->owner.has == "no") {
-                    //if(t->owner.has == "no"){
-                    if (t->has_print) {
-                        cout << t->print << endl;
-                    }
-                    if (t->has_action) {
-                        for (k = 0; k < t->action.size(); k++) {
-                            checkAction(t->action[k]);
-                        }
-                    }
+                    has_pa(t);
                     return true;
                 }
                 if(j == containers[i]->item.size() && t->owner.has == "yes"){
@@ -1003,16 +896,16 @@ bool threeCondTrigger(Trigger * t){
 }
 
 bool checkTrigger_nocommand(){
-    //check all triggers and pick the triggers with no command
-    //if it is permanent, continue, no worry
-    //else if it is single, check if it has not been executed before
-    //if it is 3-cond, go to threeCondTrigger()
-    //else if it is 2-cond, go to twoCondTrigger()
+    /*
+     * Check all non-command triggers
+     * if type == "permanent" || type == "single" && has not been accessed before
+     * check the condition, go to twoCondTrigger or threeCondTrigger
+     */
     int i,j,k;
-    bool rresult = false;
-    bool iresult = false;
-    bool cresult = false;
-    bool crresult = false;
+    bool rTrigger = false;
+    bool iTrigger = false;
+    bool cTrigger = false;
+    bool crTrigger = false;
     Trigger *t;
     //currRoom room trigger
     if(current -> trigger.size() != 0){
@@ -1021,12 +914,12 @@ bool checkTrigger_nocommand(){
             if(!t->has_command){
                 if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                     if(t->condition == 2) {
-                        rresult = twoCondTrigger(t);
+                        rTrigger = twoCondTrigger(t);
                     }
                     else if(t->condition == 3) {
-                        rresult = threeCondTrigger(t);
+                        rTrigger = threeCondTrigger(t);
                     }
-                    if(rresult){
+                    if(rTrigger){
                         t->times++;
                     }
                 }
@@ -1043,12 +936,12 @@ bool checkTrigger_nocommand(){
                     if(!t->has_command){
                         if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                             if(t->condition == 2) {
-                                iresult = twoCondTrigger(t);
+                                iTrigger = twoCondTrigger(t);
                             }
                             else if(t->condition == 3) {
-                                iresult = threeCondTrigger(t);
+                                iTrigger = threeCondTrigger(t);
                             }
-                            if(iresult){
+                            if(iTrigger){
                                 t->times++;
                             }
                         }
@@ -1067,12 +960,12 @@ bool checkTrigger_nocommand(){
                     if(!t->has_command){
                         if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                             if(t->condition == 2) {
-                                cresult = twoCondTrigger(t);
+                                cTrigger = twoCondTrigger(t);
                             }
                             else if(t->condition == 3) {
-                                cresult = threeCondTrigger(t);
+                                cTrigger = threeCondTrigger(t);
                             }
-                            if(cresult){
+                            if(cTrigger){
                                 t->times++;
                             }
                         }
@@ -1091,12 +984,12 @@ bool checkTrigger_nocommand(){
                     if(!t->has_command){
                         if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                             if(t->condition == 2) {
-                                crresult = twoCondTrigger(t);
+                                crTrigger = twoCondTrigger(t);
                             }
                             else if(t->condition == 3) {
-                                crresult = threeCondTrigger(t);
+                                crTrigger = threeCondTrigger(t);
                             }
-                            if(crresult){
+                            if(crTrigger){
                                 t->times++;
                             }
                         }
@@ -1105,21 +998,20 @@ bool checkTrigger_nocommand(){
             }
         }
     }
-    return (rresult||iresult||cresult||crresult);
+    return (rTrigger||iTrigger||cTrigger||crTrigger);
 }
 
 bool checkTrigger_withcommand(string input){
-    //truncate input
-    //check all triggers and pick the triggers with command
-    //if it is permanent, continue, no worry
-    //else if it is single, check if it has been executed before
-    //if it is 3-cond, go to threeCondTrigger()
-    //else if it is 2-cond, go to twoCondTrigger()
+    /*
+     * Check all with command triggers
+     * if type == "permanent" || type == "single" && has not been accessed before
+     * check the condition, go to twoCondTrigger or threeCondTrigger
+     */
     int i,j,k;
-    bool rresult = false;
-    bool iresult = false;
-    bool cresult = false;
-    bool crresult = false;
+    bool rTrigger = false;
+    bool iTrigger = false;
+    bool cTrigger = false;
+    bool crTrigger = false;
     Trigger *t;
     //current room trigger
     if(current -> trigger.size() != 0){
@@ -1128,12 +1020,12 @@ bool checkTrigger_withcommand(string input){
             if(t -> has_command && input == t -> command){
                 if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                     if(t->condition == 2){
-                        rresult = twoCondTrigger(t);
+                        rTrigger = twoCondTrigger(t);
                     }
                     else if(t->condition == 3){
-                        rresult = threeCondTrigger(t);
+                        rTrigger = threeCondTrigger(t);
                     }
-                    if(rresult){
+                    if(rTrigger){
                         t->times++;
                     }
                 }
@@ -1150,12 +1042,12 @@ bool checkTrigger_withcommand(string input){
                     if(t -> has_command && input == t -> command){
                         if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                             if(t->condition == 2){
-                                iresult = twoCondTrigger(t);
+                                iTrigger = twoCondTrigger(t);
                             }
                             else if(t->condition == 3){
-                                iresult = threeCondTrigger(t);
+                                iTrigger = threeCondTrigger(t);
                             }
-                            if(iresult){
+                            if(iTrigger){
                                 t->times++;
                             }
                         }
@@ -1175,12 +1067,12 @@ bool checkTrigger_withcommand(string input){
                         if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                             if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                                 if(t->condition == 2){
-                                    cresult = twoCondTrigger(t);
+                                    cTrigger = twoCondTrigger(t);
                                 }
                                 else if(t->condition == 3){
-                                    cresult = threeCondTrigger(t);
+                                    cTrigger = threeCondTrigger(t);
                                 }
-                                if(cresult){
+                                if(cTrigger){
                                     t->times++;
                                 }
                             }
@@ -1201,12 +1093,12 @@ bool checkTrigger_withcommand(string input){
                         if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                             if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
                                 if(t->condition == 2){
-                                    crresult = twoCondTrigger(t);
+                                    crTrigger = twoCondTrigger(t);
                                 }
                                 else if(t->condition == 3){
-                                    crresult = threeCondTrigger(t);
+                                    crTrigger = threeCondTrigger(t);
                                 }
-                                if(crresult){
+                                if(crTrigger){
                                     t->times++;
                                 }
                             }
@@ -1216,7 +1108,7 @@ bool checkTrigger_withcommand(string input){
             }
         }
     }
-    return (rresult||iresult||cresult||crresult);
+    return (rTrigger||iTrigger||cTrigger||crTrigger);
 }
 
 #endif
