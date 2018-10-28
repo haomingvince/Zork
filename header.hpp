@@ -27,7 +27,7 @@ vector<string> inventory;
 bool END = false;
 Room * current;
 void checkInput(string);
-string istypeof(string);
+string findType(string);
 
 Room* findRoom(string specific)  {
     for (int i = 0; i < rooms.size(); i++) {
@@ -187,7 +187,7 @@ void toAnotherRoom(string inpStr) {
 
 /*************User Defined Functions - Behind scenes**************/
 void Add(string inpStr) {
-    string type = istypeof(inpStr.substr(0, inpStr.find(" to ")));
+    string type = findType(inpStr.substr(0, inpStr.find(" to ")));
     if (type == "Item" ){
         Room* newRoom = findRoom(inpStr.substr(inpStr.find(" to ") + 4));
         if (newRoom != NULL) {
@@ -704,25 +704,25 @@ void checkInput(string input){
 }
 
 /***********************For my triggers***************************/
-string istypeof(string o){
-    int i;
+string findType(string inpStr){
+    int i = 0;
     for(i = 0; i < rooms.size(); i++){
-        if(rooms[i] -> name == o){
+        if(rooms[i] -> name == inpStr){
             return "Room";
         }
     }
     for(i = 0; i < items.size(); i++){
-        if(items[i] -> name == o){
+        if(items[i] -> name == inpStr){
             return "Item";
         }
     }
     for(i = 0; i < containers.size(); i++){
-        if(containers[i] -> name == o){
+        if(containers[i] -> name == inpStr){
             return "Container";
         }
     }
     for(i = 0; i < creatures.size(); i++){
-        if(creatures[i] -> name == o){
+        if(creatures[i] -> name == inpStr){
             return "Creature";
         }
     }
@@ -730,66 +730,182 @@ string istypeof(string o){
 }
 
 void has_pa(Trigger* t){
-    int j = 0;
+    int i = 0;
     if(t->has_print){
-        cout<<t->print<<endl;
+        cout << t->print << endl;
     }
     if(t->has_action){
-        for(j = 0; j < t->action.size();j++){
-            checkAction(t->action[j]);
+        for(i = 0; i < t->action.size(); i++){
+            checkAction(t->action[i]);
         }
     }
 }
 
-bool twoCondTrigger(Trigger* t){
+bool findRoomTwoTrigger(Trigger* t){
     int i = 0;
-    string object_type = istypeof(t->status.object);
-    if(object_type == "Room"){
-        for(i = 0; i < rooms.size(); i++){
-            if(rooms[i] -> name == t->status.object){
-                if(rooms[i] -> status == t->status.status){
-                    has_pa(t);
-                    return true;
-                }
+    for(i = 0; i < rooms.size(); i++){
+        if(rooms[i]->name == t->status.object){
+            if(rooms[i]->status == t->status.status){
+                has_pa(t);
+                return true;
             }
         }
+    }
+    return false;
+}
+
+bool findItemTwoTrigger(Trigger* t){
+    int i = 0;
+    for(i = 0; i < items.size(); i++){
+        if(items[i]->name == t->status.object){
+            if(items[i]->status == t->status.status){
+                has_pa(t);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool findContainerTwoTrigger(Trigger* t){
+    int i = 0;
+    for(i = 0; i < containers.size(); i++){
+        if(containers[i]->name == t->status.object){
+            if(containers[i]->status == t->status.status){
+                has_pa(t);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool findCreatureTwoTrigger(Trigger* t){
+    int i = 0;
+    for(i = 0; i < creatures.size(); i++){
+        if(creatures[i]->name == t->status.object){
+            if(creatures[i]->status == t->status.status){
+                has_pa(t);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool twoCondTrigger(Trigger* t){
+    bool output = false;
+    string object_type = findType(t->status.object);
+    if(object_type == "Room"){
+        output = findRoomTwoTrigger(t);
     }
     if(object_type == "Item"){
-        for(i = 0; i < items.size(); i++){
-            if(items[i] -> name == t->status.object){
-                if(items[i] -> status == t->status.status){
-                    has_pa(t);
-                    return true;
-                }
-            }
-        }
+        output = findItemTwoTrigger(t);
     }
     if(object_type == "Container"){
-        for(i = 0; i < containers.size(); i++){
-            if(containers[i] -> name == t->status.object){
-                if(containers[i] -> status == t->status.status){
+        output = findContainerTwoTrigger(t);
+    }
+    if(object_type == "Creature"){
+        output = findCreatureTwoTrigger(t);
+    }
+    return output;
+}
+
+bool findRoomThreeTrigger(Trigger* t){
+    int i = 0;
+    int j = 0;
+    string object_type = findType(t->owner.object);
+    for(i = 0; i < rooms.size(); i++){
+        if(rooms[i] -> name == t->owner.owner){
+            if(object_type == "Item"){
+                for(j = 0; j < rooms[i] -> item.size(); j++) {
+                    if (rooms[i]->item[j] == t->owner.object && t->owner.has == "yes") {
+                        has_pa(t);
+                        return true;
+                    }
+                    if (rooms[i]->item[j] == t->owner.object && t->owner.has == "no") {
+                        return false;
+                    }
+                }
+                if(j == rooms[i]->item.size() && t->owner.has == "no") {
                     has_pa(t);
                     return true;
                 }
+                if(j == rooms[i]->item.size() && t->owner.has == "yes") {
+                    return false;
+                }
             }
-        }
-    }
-    if(object_type == "Creature"){
-        for(i = 0; i < creatures.size(); i++){
-            if(creatures[i] -> name == t->status.object){
-                if(creatures[i] -> status == t->status.status){
+            if(object_type == "Container"){
+                for(j = 0; j < rooms[i] -> container.size(); j++){
+                    if(rooms[i]->container[j]== t->owner.object && t->owner.has == "yes") {
+                        has_pa(t);
+                        return true;
+                    }
+                    if(rooms[i]->container[j]== t->owner.object && t->owner.has == "no"){
+                        return false;
+                    }
+                }
+                if(j == rooms[i]->container.size() && t->owner.has == "no") {
                     has_pa(t);
                     return true;
+                }
+                if(j == rooms[i]->container.size() && t->owner.has == "yes"){
+                    return false;
+                }
+            }
+            if(object_type == "Creature"){
+                for(j = 0; j < rooms[i] -> creature.size(); j++){
+                    if(rooms[i]->creature[j]== t->owner.object && t->owner.has == "yes") {
+                        has_pa(t);
+                        return true;
+                    }
+                    if(rooms[i]->creature[j]== t->owner.object && t->owner.has == "no"){
+                        return false;
+                    }
+                }
+                if(j == rooms[i]->creature.size() && t->owner.has == "no") {
+                    has_pa(t);
+                    return true;
+                }
+                if(j == rooms[i]->creature.size() && t->owner.has == "yes"){
+                    return false;
                 }
             }
         }
     }
     return false;
 }
+
+bool findContainerThreeTrigger(Trigger* t){
+    int i = 0;
+    int j = 0;
+    for(i = 0; i < containers.size(); i++){
+        if(containers[i]->name == t->owner.owner){
+            for(j = 0; j < containers[i] -> item.size(); j++){
+                if(containers[i]->item[j]== t->owner.object && t->owner.has == "yes") {
+                    has_pa(t);
+                    return true;
+                }
+                if(containers[i]->item[j]== t->owner.object && t->owner.has == "no"){
+                    return false;
+                }
+            }
+            if(j == containers[i]->item.size() && t->owner.has == "no") {
+                has_pa(t);
+                return true;
+            }
+            if(j == containers[i]->item.size() && t->owner.has == "yes"){
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
 bool threeCondTrigger(Trigger * t){
     //if owner == object && has == yes || owner != object && has == no -> trigger activated
     int i = 0;
-    int j = 0;
+    bool output = false;
     if(t->owner.owner == "inventory"){
         for(i = 0; i < inventory.size(); i++){
             if(inventory[i] == t->owner.object && t->owner.has == "yes") {
@@ -808,226 +924,107 @@ bool threeCondTrigger(Trigger * t){
             return false;
         }
     }
-    string owner_type = istypeof(t->owner.owner);
-    string object_type = istypeof(t->owner.object);
+    string owner_type = findType(t->owner.owner);
     if(owner_type == "Room"){
-        for(i = 0; i < rooms.size(); i++){
-            if(rooms[i] -> name == t->owner.owner){
-                if(object_type == "Item"){
-                    for(j = 0; j < rooms[i] -> item.size(); j++) {
-                        if (rooms[i]->item[j] == t->owner.object && t->owner.has == "yes") {
-                            has_pa(t);
-                            return true;
-                        }
-                        if (rooms[i]->item[j] == t->owner.object && t->owner.has == "no") {
-                            return false;
-                        }
-                    }
-                    if(j == rooms[i]->item.size() && t->owner.has == "no") {
-                        has_pa(t);
-                        return true;
-                    }
-                    if(j == rooms[i]->item.size() && t->owner.has == "yes") {
-                        return false;
-                    }
-                }
-                if(object_type == "Container"){
-                    for(j = 0; j < rooms[i] -> container.size(); j++){
-                        if(rooms[i]->container[j]== t->owner.object && t->owner.has == "yes") {
-                            has_pa(t);
-                            return true;
-                        }
-                        if(rooms[i]->container[j]== t->owner.object && t->owner.has == "no"){
-                            return false;
-                        }
-                    }
-                    if(j == rooms[i]->container.size() && t->owner.has == "no") {
-                        has_pa(t);
-                        return true;
-                    }
-                    if(j == rooms[i]->container.size() && t->owner.has == "yes"){
-                        return false;
-                    }
-                }
-                if(object_type == "Creature"){
-                    for(j = 0; j < rooms[i] -> creature.size(); j++){
-                        if(rooms[i]->creature[j]== t->owner.object && t->owner.has == "yes") {
-                            has_pa(t);
-                            return true;
-                        }
-                        if(rooms[i]->creature[j]== t->owner.object && t->owner.has == "no"){
-                            return false;
-                        }
-                    }
-                    if(j == rooms[i]->creature.size() && t->owner.has == "no") {
-                        has_pa(t);
-                        return true;
-                    }
-                    if(j == rooms[i]->creature.size() && t->owner.has == "yes"){
-                        return false;
-                    }
-                }
-            }
-        }
+        output = findRoomThreeTrigger(t);
     }
-    if(owner_type == "Container"){
-        for(i = 0; i < containers.size(); i++){
-            if(containers[i]->name == t->owner.owner){
-                for(j = 0; j < containers[i] -> item.size(); j++){
-                    if(containers[i]->item[j]== t->owner.object && t->owner.has == "yes") {
-                        has_pa(t);
-                        return true;
-                    }
-                    if(containers[i]->item[j]== t->owner.object && t->owner.has == "no"){
-                        return false;
-                    }
-                }
-                if(j == containers[i]->item.size() && t->owner.has == "no") {
-                    has_pa(t);
-                    return true;
-                }
-                if(j == containers[i]->item.size() && t->owner.has == "yes"){
-                    return false;
-                }
-            }
-        }
+    if(owner_type == "Container") {
+        output = findContainerThreeTrigger(t);
     }
-    return false;
+    return output;
 }
 
-bool checkTrigger_nocommand(){
-    /*
-     * Check all non-command triggers
-     * if type == "permanent" || type == "single" && has not been accessed before
-     * check the condition, go to twoCondTrigger or threeCondTrigger
-     */
-    int i,j,k;
-    bool rTrigger = false;
-    bool iTrigger = false;
-    bool cTrigger = false;
-    bool crTrigger = false;
-    Trigger *t;
-    //currRoom room trigger
-    if(current -> trigger.size() != 0){
-        for(j = 0; j < current->trigger.size(); j++){
-            t = current->trigger[j];
-            if(!t->has_command){
-                if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                    if(t->condition == 2) {
-                        rTrigger = twoCondTrigger(t);
-                    }
-                    else if(t->condition == 3) {
-                        rTrigger = threeCondTrigger(t);
-                    }
-                    if(rTrigger){
-                        t->times++;
-                    }
-                }
-            }
+bool chkRoomTrigger(Trigger* t){
+    bool chkRoom = false;
+    if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
+        if(t->condition == 2) {
+            chkRoom = twoCondTrigger(t);
+        }
+        else if(t->condition == 3) {
+            chkRoom = threeCondTrigger(t);
+        }
+        if(chkRoom){
+            t->times++;
         }
     }
-    //currRoom room's item trigger
-    for(i = 0; i < current -> item.size(); i++){
-        string target = current -> item[i];
-        for(j = 0; j < items.size(); j++){
-            if(items[j] -> name == target){
-                for(k = 0; k < items[j] -> trigger.size(); k++){
-                    t = items[j] -> trigger[k];
-                    if(!t->has_command){
-                        if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                            if(t->condition == 2) {
-                                iTrigger = twoCondTrigger(t);
-                            }
-                            else if(t->condition == 3) {
-                                iTrigger = threeCondTrigger(t);
-                            }
-                            if(iTrigger){
-                                t->times++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    //currRoom room's container trigger
-    for(i = 0; i < current -> container.size(); i++){
-        string target = current -> container[i];
-        for(j = 0; j < containers.size(); j++){
-            if(containers[j] -> name == target){
-                for(k = 0; k < containers[j] -> trigger.size(); k++){
-                    t = containers[j] -> trigger[k];
-                    if(!t->has_command){
-                        if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                            if(t->condition == 2) {
-                                cTrigger = twoCondTrigger(t);
-                            }
-                            else if(t->condition == 3) {
-                                cTrigger = threeCondTrigger(t);
-                            }
-                            if(cTrigger){
-                                t->times++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    //currRoom room's creature trigger
-    for(i = 0; i < current -> creature.size(); i++){
-        string target = current -> creature[i];
-        for(j = 0; j < creatures.size(); j++){
-            if(creatures[j] -> name == target){
-                for(k = 0; k < creatures[j] -> trigger.size(); k++){
-                    t = creatures[j] -> trigger[k];
-                    if(!t->has_command){
-                        if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                            if(t->condition == 2) {
-                                crTrigger = twoCondTrigger(t);
-                            }
-                            else if(t->condition == 3) {
-                                crTrigger = threeCondTrigger(t);
-                            }
-                            if(crTrigger){
-                                t->times++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    return (rTrigger||iTrigger||cTrigger||crTrigger);
+    return chkRoom;
 }
 
-bool checkTrigger_withcommand(string input){
+bool chkItemTrigger(Trigger* t){
+    bool chkItem = false;
+    if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
+        if(t->condition == 2) {
+            chkItem = twoCondTrigger(t);
+        }
+        else if(t->condition == 3) {
+            chkItem = threeCondTrigger(t);
+        }
+        if(chkItem){
+            t->times++;
+        }
+    }
+    return chkItem;
+}
+
+bool chkContainerTrigger(Trigger* t){
+    bool chkContainer = false;
+    if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
+        if(t->condition == 2) {
+            chkContainer = twoCondTrigger(t);
+        }
+        else if(t->condition == 3) {
+            chkContainer = threeCondTrigger(t);
+        }
+        if(chkContainer){
+            t->times++;
+        }
+    }
+    return chkContainer;
+}
+
+bool chkCreatureTrigger(Trigger* t){
+    bool chkCreature = false;
+    if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
+        if(t->condition == 2) {
+            chkCreature = twoCondTrigger(t);
+        }
+        else if(t->condition == 3) {
+            chkCreature = threeCondTrigger(t);
+        }
+        if(chkCreature){
+            t->times++;
+        }
+    }
+    return chkCreature;
+}
+
+bool findTrigger(int cmd, string input){
     /*
+     * cmd = 0 -> no command; cmd = 1 -> with command
      * Check all with command triggers
      * if type == "permanent" || type == "single" && has not been accessed before
      * check the condition, go to twoCondTrigger or threeCondTrigger
      */
-    int i,j,k;
-    bool rTrigger = false;
-    bool iTrigger = false;
-    bool cTrigger = false;
-    bool crTrigger = false;
+    int i = 0;
+    int j = 0;
+    int k = 0;
+    bool chkRoom = false;
+    bool chkItem = false;
+    bool chkContainer = false;
+    bool chkCreature = false;
     Trigger *t;
     //current room trigger
     if(current -> trigger.size() != 0){
         for(j = 0; j < current->trigger.size(); j++){
             t = current->trigger[j];
-            if(t -> has_command && input == t -> command){
-                if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                    if(t->condition == 2){
-                        rTrigger = twoCondTrigger(t);
-                    }
-                    else if(t->condition == 3){
-                        rTrigger = threeCondTrigger(t);
-                    }
-                    if(rTrigger){
-                        t->times++;
-                    }
+            if(cmd == 0){
+                if(!t->has_command){
+                    chkRoom = chkRoomTrigger(t);
+                }
+            }
+            else if(cmd == 1) {
+                if (t->has_command && input == t->command) {
+                    chkRoom = chkRoomTrigger(t);
                 }
             }
         }
@@ -1037,19 +1034,16 @@ bool checkTrigger_withcommand(string input){
         string target = inventory[i];
         for(j = 0; j < items.size(); j++){
             if(items[j] -> name == target){
-                for(k = 0; k < items[j] -> trigger.size(); k++){
-                    t = items[j] -> trigger[k];
-                    if(t -> has_command && input == t -> command){
-                        if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                            if(t->condition == 2){
-                                iTrigger = twoCondTrigger(t);
-                            }
-                            else if(t->condition == 3){
-                                iTrigger = threeCondTrigger(t);
-                            }
-                            if(iTrigger){
-                                t->times++;
-                            }
+                for(k = 0; k < items[j] -> trigger.size(); k++) {
+                    t = items[j]->trigger[k];
+                    if(cmd == 0){
+                        if(!t->has_command){
+                            chkItem = chkItemTrigger(t);
+                        }
+                    }
+                    else if (cmd == 1) {
+                        if (t->has_command && input == t->command) {
+                            chkItem = chkItemTrigger(t);
                         }
                     }
                 }
@@ -1063,52 +1057,40 @@ bool checkTrigger_withcommand(string input){
             if(containers[j] -> name == target){
                 for(k = 0; k < containers[j] -> trigger.size(); k++){
                     t = containers[j] -> trigger[k];
-                    if(t -> has_command && input == t -> command){
-                        if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                            if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                                if(t->condition == 2){
-                                    cTrigger = twoCondTrigger(t);
-                                }
-                                else if(t->condition == 3){
-                                    cTrigger = threeCondTrigger(t);
-                                }
-                                if(cTrigger){
-                                    t->times++;
-                                }
-                            }
+                    if(cmd == 0){
+                        if(!t->has_command){
+                            chkContainer = chkContainerTrigger(t);
+                        }
+                    }
+                    else if(cmd == 1) {
+                        if (t->has_command && input == t->command) {
+                            chkContainer = chkContainerTrigger(t);
                         }
                     }
                 }
             }
         }
     }
-    //currRoom room's creature trigger
+    //current room's creature trigger
     for(i = 0; i < current -> creature.size(); i++){
         string target = current -> creature[i];
         for(j = 0; j < creatures.size(); j++){
             if(creatures[j] -> name == target){
                 for(k = 0; k < creatures[j] -> trigger.size(); k++){
                     t = creatures[j] -> trigger[k];
-                    if(t -> has_command && input == t -> command){
-                        if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                            if(t->type == "permanent" || (t->type == "single" && t->times == 0)){
-                                if(t->condition == 2){
-                                    crTrigger = twoCondTrigger(t);
-                                }
-                                else if(t->condition == 3){
-                                    crTrigger = threeCondTrigger(t);
-                                }
-                                if(crTrigger){
-                                    t->times++;
-                                }
-                            }
+                    if(cmd == 0){
+                        chkCreature = chkCreatureTrigger(t);
+                    }
+                    else if(cmd == 1) {
+                        if (t->has_command && input == t->command) {
+                            chkCreature = chkCreatureTrigger(t);
                         }
                     }
                 }
             }
         }
     }
-    return (rTrigger||iTrigger||cTrigger||crTrigger);
+    return (chkRoom||chkItem||chkContainer||chkCreature);
 }
 
 #endif

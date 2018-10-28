@@ -1,4 +1,4 @@
-#include "Attack.hpp"
+#include "attack.hpp"
 
 Attack::~Attack() {}
 

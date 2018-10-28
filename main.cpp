@@ -79,14 +79,14 @@ int main(int argc, char *argv[]){
     current = rooms[0];
     cout<< current -> description <<endl;
     while(true){
-        overridden = checkTrigger_nocommand();
+        overridden = findTrigger(0, "");
         if(END){break;}
         if(overridden){continue;}
         getline(cin, input);
         //Quit Command
         if(string(input) == string("q")){break;}
 
-        overridden = checkTrigger_withcommand(input);
+        overridden = findTrigger(1, input);
         if(END){break;}
         if(overridden){continue;}
 

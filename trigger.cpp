@@ -1,4 +1,4 @@
-#include "Trigger.hpp"
+#include "trigger.hpp"
 
 Trigger::~Trigger() { }
 Trigger::Trigger(rapidxml::xml_node<>* node){

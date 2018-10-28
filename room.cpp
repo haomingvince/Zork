@@ -1,4 +1,4 @@
-#include "Room.hpp"
+#include "room.hpp"
 
 Room::~Room() { }
 
