@@ -28,6 +28,98 @@ bool END = false;
 Room * current;
 void checkInput(string);
 string findType(string);
+bool findTrigger(int, string);
+
+/*************Game Start Entry**************/
+void findAllStuff(char *argv[]){
+    /*
+     * Find all stuff (e.g. rooms, containers, items, creatures from map)
+     */
+    rapidxml::file<> xmlFile(argv[1]);
+    rapidxml::xml_document<> file;
+    file.parse<0>(xmlFile.data());
+    rapidxml::xml_node<> *node = file.first_node();
+
+    vector<rapidxml::xml_node<>*> allRooms;
+    vector<rapidxml::xml_node<>*> allContainers;
+    vector<rapidxml::xml_node<>*> allItems;
+    vector<rapidxml::xml_node<>*> allCreatures;
+
+    Room* room;
+    Container* container;
+    Item* item;
+    Creature* creature;
+
+    rapidxml::xml_node<>* temp = node->first_node();
+    while(temp != NULL){
+        string tag = string(temp->name());
+        if(tag == string("room")){
+            allRooms.push_back(temp);
+        }
+        if(tag == string("container")){
+            allContainers.push_back(temp);
+        }
+        if(tag == string("item")){
+            allItems.push_back(temp);
+        }
+        if(tag == string("creature")){
+            allCreatures.push_back(temp);
+        }
+        temp = temp -> next_sibling();
+    }
+
+    for(int i = 0; i < allRooms.size(); i++){
+        room = new Room(allRooms[i]);
+        rooms.push_back(room);
+    }
+
+    for(int i = 0; i < allContainers.size(); i++){
+        container = new Container(allContainers[i]);
+        containers.push_back(container);
+    }
+
+    for(int i = 0; i < allItems.size(); i++){
+        item = new Item(allItems[i]);
+        items.push_back(item);
+    }
+
+    for(int i = 0; i < allCreatures.size(); i++){
+        creature = new Creature(allCreatures[i]);
+        creatures.push_back(creature);
+    }
+}
+
+
+void gameStart(){
+    string input = "";
+    bool override = false;
+    current = rooms[0];
+    cout << current -> description << endl;
+    while(true){
+        override = findTrigger(0, "");
+        if(END){
+            break;
+        }
+        if(override){
+            continue;
+        }
+        getline(cin, input);
+        if(string(input) == string("q")){
+            break;
+        }
+        override = findTrigger(1, input);
+        if(END){
+            break;
+        }
+        if(override){
+            continue;
+        }
+        checkInput(input);
+        if(END){
+            break;
+        }
+    }
+}
 
 Room* findRoom(string specific)  {
     for (int i = 0; i < rooms.size(); i++) {
@@ -576,102 +668,6 @@ void attack(string attakee, string weapon) {
         cout << creatures[idx]->attack->print << endl;
     }
 }
-
-/*void attack(string monster, string weapon){
-    //first, check if we have the monster in this room
-    int i,j;
-    for(i = 0; i < current -> creature.size(); i++){
-        if(current -> creature[i] == monster){ break; }
-    }
-    //if yes, continue, if no, error message
-    if(i == current -> creature.size()){
-        cout<<"There is no such creature called "<<monster<<" here."<<endl;
-        return;
-    }
-    //second, check if we have the weapon
-    for(i = 0; i<inventory.size(); i++){
-        if(inventory[i] == weapon){ break; }
-    }
-    //if yes, continue, if no, error message
-    if(i == inventory.size()){
-        cout<<"There is no such thing called "<<weapon<<" in your inventory."<<endl;
-        return;
-    }
-    cout<<"You assault the "<<monster<<" with the "<<weapon<<endl;
-    //third, check if weapon matches the vulnerability
-    for(i = 0; i<creatures.size(); i++){
-        if(creatures[i]->name == monster){ break;}
-    }
-    for(j = 0; j < creatures[i]->vulnerability.size();j++){
-        if(creatures[i]->vulnerability[j] == weapon){ break;}
-    }
-    //if yes, continue, if no, error message
-    if(j == creatures[i]->vulnerability.size()){
-        cout<<"It seems "<<weapon<<" is useless to "<<monster<<endl;
-        return;
-    }
-    //forth, check if we meet the condition
-    if(creatures[i]->attack == NULL){
-        return;
-    }
-    if(creatures[i]->attack->has_condition){
-        //-object - can be room/container/creature/item
-        string object = creatures[i]->attack->condition.object;
-        //-status
-        string status = creatures[i]->attack->condition.status;
-        bool found = false;
-        bool match = false;
-        for(j = 0; j < items.size(); j++){
-            if(items[j]->name == object){
-                found = true;
-                match = items[j]->status == status;
-                break;
-            }
-        }
-        if(!found){
-            for(j = 0; j < rooms.size(); j++){
-                if(rooms[j]->name == object){
-                    found = true;
-                    match = rooms[j]->status == status;
-                    break;
-                }
-            }
-        }
-        if(!found){
-            for(j = 0; j < containers.size(); j++){
-                if(containers[j]->name == object){
-                    found = true;
-                    match = containers[j]->status == status;
-                    break;
-                }
-            }
-        }
-        if(!found){
-            for(j = 0; j < creatures.size(); j++){
-                if(creatures[j]->name == object){
-                    found = true;
-                    match = creatures[j]->status == status;
-                    break;
-                }
-            }
-        }
-        //if yes, continue, if no, error message
-        if(!match){
-            cout<<"You need make sure "<<object<<" is "<<status<<endl;
-            return;
-        }
-    }
-    //finally, print and take actions(plural)
-    if(creatures[i]->attack->has_print){
-        cout<<creatures[i]->attack->print<<endl;
-    }
-    if(creatures[i]->attack->has_action){
-        for(j = 0; j<creatures[i]->attack->action.size();j++){
-            checkAction(creatures[i]->attack->action[j]);
-        }
-    }
-}*/
-
 
 /********************User input manager***************************/
 void checkInput(string input){
