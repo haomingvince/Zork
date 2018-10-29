@@ -171,9 +171,7 @@ void toAnotherRoom(string inpStr) {
                 flagg = 1;
                 current = newRoom;
             }
-            else {
-                break;
-            }
+            break;
         }
     }
 
@@ -376,16 +374,21 @@ void read(string inpStr) {
             Item* newItem = findItem(inpStr);
             if (newItem != NULL && newItem->writing.size() > 0) {
                 cout << newItem->writing << endl;
+                return;
             }
             else {
-                cout << "Error" << endl;
+                cout << "Nothing written." << endl;
+                return;
             }
             break;
         }
         if(i == inventory.size()-1 && flagg == 0) {
             cout << "Error" << endl;
+            return;
         }
     }
+
+    cout << "Error" << endl;
 
     return;
 }
@@ -508,11 +511,15 @@ void attack(string attakee, string weapon) {
         return;
     }
 
+    cout << "You assault the " << attakee << " with the " << weapon << "." << endl;
+
     int idx = existCreature(attakee);
     if (creatures[idx]->attack == NULL) {
-        cout << "Error"  << endl;
+        //cout << "Error"  << endl;
         return;
     }
+
+
 
     int flagg_has_item = 0;
     int flagg_match_status = 0;
@@ -552,12 +559,12 @@ void attack(string attakee, string weapon) {
         }
 
         if (flagg_match_status == 0) {
-            cout << "Error" << endl;
+            cout << "Useless" << endl;
             return;
         }
     }
 
-    cout << "You assault the gnome with the " << weapon << "." << endl;
+
 
     if (creatures[idx]->attack->has_action) {
         for (int i = 0; i < creatures[idx]->attack->action.size(); i++) {
@@ -569,6 +576,102 @@ void attack(string attakee, string weapon) {
         cout << creatures[idx]->attack->print << endl;
     }
 }
+
+/*void attack(string monster, string weapon){
+    //first, check if we have the monster in this room
+    int i,j;
+    for(i = 0; i < current -> creature.size(); i++){
+        if(current -> creature[i] == monster){ break; }
+    }
+    //if yes, continue, if no, error message
+    if(i == current -> creature.size()){
+        cout<<"There is no such creature called "<<monster<<" here."<<endl;
+        return;
+    }
+    //second, check if we have the weapon
+    for(i = 0; i<inventory.size(); i++){
+        if(inventory[i] == weapon){ break; }
+    }
+    //if yes, continue, if no, error message
+    if(i == inventory.size()){
+        cout<<"There is no such thing called "<<weapon<<" in your inventory."<<endl;
+        return;
+    }
+    cout<<"You assault the "<<monster<<" with the "<<weapon<<endl;
+    //third, check if weapon matches the vulnerability
+    for(i = 0; i<creatures.size(); i++){
+        if(creatures[i]->name == monster){ break;}
+    }
+    for(j = 0; j < creatures[i]->vulnerability.size();j++){
+        if(creatures[i]->vulnerability[j] == weapon){ break;}
+    }
+    //if yes, continue, if no, error message
+    if(j == creatures[i]->vulnerability.size()){
+        cout<<"It seems "<<weapon<<" is useless to "<<monster<<endl;
+        return;
+    }
+    //forth, check if we meet the condition
+    if(creatures[i]->attack == NULL){
+        return;
+    }
+    if(creatures[i]->attack->has_condition){
+        //-object - can be room/container/creature/item
+        string object = creatures[i]->attack->condition.object;
+        //-status
+        string status = creatures[i]->attack->condition.status;
+        bool found = false;
+        bool match = false;
+        for(j = 0; j < items.size(); j++){
+            if(items[j]->name == object){
+                found = true;
+                match = items[j]->status == status;
+                break;
+            }
+        }
+        if(!found){
+            for(j = 0; j < rooms.size(); j++){
+                if(rooms[j]->name == object){
+                    found = true;
+                    match = rooms[j]->status == status;
+                    break;
+                }
+            }
+        }
+        if(!found){
+            for(j = 0; j < containers.size(); j++){
+                if(containers[j]->name == object){
+                    found = true;
+                    match = containers[j]->status == status;
+                    break;
+                }
+            }
+        }
+        if(!found){
+            for(j = 0; j < creatures.size(); j++){
+                if(creatures[j]->name == object){
+                    found = true;
+                    match = creatures[j]->status == status;
+                    break;
+                }
+            }
+        }
+        //if yes, continue, if no, error message
+        if(!match){
+            cout<<"You need make sure "<<object<<" is "<<status<<endl;
+            return;
+        }
+    }
+    //finally, print and take actions(plural)
+    if(creatures[i]->attack->has_print){
+        cout<<creatures[i]->attack->print<<endl;
+    }
+    if(creatures[i]->attack->has_action){
+        for(j = 0; j<creatures[i]->attack->action.size();j++){
+            checkAction(creatures[i]->attack->action[j]);
+        }
+    }
+}*/
+
 
 /********************User input manager***************************/
 void checkInput(string input){
@@ -626,7 +729,7 @@ void checkInput(string input){
                 cout << "Game Over" << endl;
             }
             else {
-                cout << "There is no exit in this room" << endl;
+                cout << "Error" << endl;
             }
             return;
         }
@@ -641,7 +744,7 @@ void checkInput(string input){
                 cout << "Game Over" << endl;
             }
             else {
-                cout << "There is no exit in this room" << endl;
+                cout << "Error" << endl;
             }
             return;
         }
@@ -999,12 +1102,12 @@ bool chkCreatureTrigger(Trigger* t){
 }
 
 bool findTrigger(int cmd, string input){
-    /*
-     * cmd = 0 -> no command; cmd = 1 -> with command
-     * Check all with command triggers
-     * if type == "permanent" || type == "single" && has not been accessed before
-     * check the condition, go to twoCondTrigger or threeCondTrigger
-     */
+     /*
+      * cmd = 0 -> no command; cmd = 1 -> with command
+      * Check all with command triggers
+      * if type == "permanent" || type == "single" && has not been accessed before
+      * check the condition, go to twoCondTrigger or threeCondTrigger
+      */
     int i = 0;
     int j = 0;
     int k = 0;
@@ -1050,7 +1153,7 @@ bool findTrigger(int cmd, string input){
             }
         }
     }
-    //currRoom room's container trigger
+    //current room's container trigger
     for(i = 0; i < current -> container.size(); i++){
         string target = current -> container[i];
         for(j = 0; j < containers.size(); j++){
@@ -1079,7 +1182,9 @@ bool findTrigger(int cmd, string input){
                 for(k = 0; k < creatures[j] -> trigger.size(); k++){
                     t = creatures[j] -> trigger[k];
                     if(cmd == 0){
-                        chkCreature = chkCreatureTrigger(t);
+                        if(!t->has_command) {
+                            chkCreature = chkCreatureTrigger(t);
+                        }
                     }
                     else if(cmd == 1) {
                         if (t->has_command && input == t->command) {
