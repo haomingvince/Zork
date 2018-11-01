@@ -389,7 +389,7 @@ void checkAction(string action){
     }
     if(action == "Game Over"){
         END = true;
-        cout << "Game Over!" << endl;
+        cout << "Victory!" << endl;
         return;
     }
     checkInput(action);

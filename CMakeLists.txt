@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.12)
-project(proj1)
+project(Zork)
 
 set(CMAKE_CXX_STANDARD 14)
 
 include_directories(.)
 include_directories(rapidxml-1.13)
 
-add_executable(proj1
+add_executable(Zork
         rapidxml-1.13/rapidxml.hpp
         rapidxml-1.13/rapidxml_iterators.hpp
         rapidxml-1.13/rapidxml_print.hpp
